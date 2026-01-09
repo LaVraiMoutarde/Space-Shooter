@@ -23,12 +23,12 @@ class Boss:
         self.y = -250 # Il est caché là pour l'instant
         
         # Fonctionnement de la vie
-        self.vie_max = int(30 * (1 + (difficulte - 1) * 0.4))  # Beaucoup de vie
+        self.vie_max = int(40 * (1 + (difficulte - 1) * 0.4))  # Beaucoup de vie
         self.vie = self.vie_max
         self.vitesse = 2 + (difficulte - 1) * 0.3
         self.difficulte = difficulte
         
-        # Entrée en scène
+        # Arrivé du boss
         self.entree_en_scene = True # Au début il descend
         self.direction_x = 1 # Après il va aller à droite
         

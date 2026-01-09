@@ -16,7 +16,7 @@ pygame.mixer.music.play(-1)
 
 # La taille de la fenêtre
 LARGEUR_ECRAN = 1280
-HAUTEUR_ECRAN = 900
+HAUTEUR_ECRAN = 830
 ecran = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
 pygame.display.set_caption("Space Shooter")
 
@@ -50,10 +50,10 @@ fond_y1 = 0
 fond_y2 = -HAUTEUR_ECRAN
 vitesse_fond = 2
 
-# Ongarde le score ici pour le réutiliser si on perd
+# On save le score ici pour le réutiliser si on perd
 dernier_score = 0
 
-#Classe pour gérer les explosions (utilisation de IA pour créer des explosions)
+#Classe pour gérer les explosions (utilisation de IA pour créer l'effet d'explosion)
 class Explosion:
     def __init__(self, x, y, taille=1.0):
         self.x = x
@@ -65,12 +65,10 @@ class Explosion:
         
     def mettre_a_jour(self):
         self.rayon += self.vitesse_expansion
-        # On fait disparaître petit à petit
         self.alpha = max(0, int(255 * (1 - self.rayon / self.rayon_max)))
         return self.rayon < self.rayon_max
     
     def dessiner(self, ecran):
-        # On dessine le cercle qui grandit
         surface = pygame.Surface((self.rayon * 2, self.rayon * 2), pygame.SRCALPHA)
         pygame.draw.circle(surface, (255, 100, 0, self.alpha), (self.rayon, self.rayon), self.rayon)
         ecran.blit(surface, (self.x - self.rayon, self.y - self.rayon))
@@ -156,11 +154,11 @@ def lancer_partie():
     
     niveau = 1
     vague = 1
-    OBJECTIF_BOSS = 1
+    OBJECTIF_BOSS = 15
     
     # Plus on avance, plus la difficulté augmente
     def calculer_difficulte():
-        return niveau + (vague - 1) * 0.2
+        return niveau + (vague - 1) * 0.3
     
     difficulte = calculer_difficulte()
     
@@ -267,7 +265,7 @@ def lancer_partie():
                         
                         boss = None
                         ennemis_tues = 0
-                        OBJECTIF_BOSS = 10 + (niveau - 1) * 2
+                        OBJECTIF_BOSS = 20 + (niveau - 1) * 5
                         score += 500 * niveau
                         
             if touche:

@@ -54,7 +54,7 @@ class Joueur:
             self.vitesse += 0.5
             self.delai_entre_tirs = max(15, self.delai_entre_tirs - 3)
             if self.niveau_vaisseau in [3, 5]:
-                self.degats += 1
+                self.degats += 0.3
             
             # nouveau asset
             self.charger_image()

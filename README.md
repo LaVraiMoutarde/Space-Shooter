@@ -1,3 +1,4 @@
-# Space-Shooter
+e# Space-Shooter
 Projet Python space shooter
-Pablo Cantini - Ilan
+Pablo Cantini le goat (createur du repository avec compte VraiMoutarde et compte pyteck10)
+Ilan (collaborateur)

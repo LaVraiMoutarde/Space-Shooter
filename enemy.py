@@ -29,7 +29,7 @@ class Ennemi:
         # Il est plus ou moins fort selon la difficulté
         vitesse_base = random.randint(8, 14) / 10.0
         # Plus le jeu avance, plus il descend vite
-        self.vitesse = vitesse_base * (1 + (difficulte - 1) * 0.15)
+        self.vitesse = vitesse_base * (1 + (difficulte - 1) * 0.2)
         # Il devient plus résistant aussi
         self.vie = 1 + int((difficulte - 1) * 0.5)
     
