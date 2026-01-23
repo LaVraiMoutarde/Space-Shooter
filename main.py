@@ -65,8 +65,19 @@ class Explosion:
         
     def mettre_a_jour(self):
         self.rayon += self.vitesse_expansion
-        self.alpha = max(0, int(255 * (1 - self.rayon / self.rayon_max)))
-        return self.rayon < self.rayon_max
+        
+        # Calcul de la transparence (plus c'est grand, plus c'est transparent)
+        progression = self.rayon / self.rayon_max
+        transparence = 255 * (1 - progression)
+        self.alpha = int(transparence)
+        if self.alpha < 0:
+            self.alpha = 0
+        
+        # On retourne True si l'explosion est encore visible
+        if self.rayon < self.rayon_max:
+            return True
+        else:
+            return False
     
     def dessiner(self, ecran):
         surface = pygame.Surface((self.rayon * 2, self.rayon * 2), pygame.SRCALPHA)
@@ -130,10 +141,12 @@ def afficher_menu():
         
         # Les règles du jeu
         instructions = ["survivez le plus longtemps possible !", "Tuez tous les ennemis !"]
-        for i, instruction in enumerate(instructions):
+        numero_ligne = 0
+        for instruction in instructions:
             texte = police_info.render(instruction, True, (180, 180, 180))
-            rect = texte.get_rect(center=(LARGEUR_ECRAN // 2, 520 + i * 30))
+            rect = texte.get_rect(center=(LARGEUR_ECRAN // 2, 520 + numero_ligne * 30))
             ecran.blit(texte, rect)
+            numero_ligne += 1
         
         pygame.display.flip()
         horloge.tick(FPS)
@@ -155,6 +168,10 @@ def lancer_partie():
     niveau = 1
     vague = 1
     OBJECTIF_BOSS = 15
+    
+    # Mémoire du boss (ses poids pour le cerveau)
+    # On commence avec les valeurs de base
+    memoire_cerveau = [0.8, -0.5, 0.2]
     
     # Plus on avance, plus la difficulté augmente
     def calculer_difficulte():
@@ -191,7 +208,11 @@ def lancer_partie():
         joueur.mettre_a_jour(LARGEUR_ECRAN, HAUTEUR_ECRAN)
         
         # On fait apparaître des méchants
-        max_ennemis = 10 if boss is None else 3
+        # Si le boss est là, on limite le nombre d'ennemis
+        if boss is None:
+            max_ennemis = 10
+        else:
+            max_ennemis = 3
         
         if len(ennemis) < max_ennemis:
             # On continue tant que c'est pas le boss
@@ -201,12 +222,15 @@ def lancer_partie():
                     compteur_apparition = 0
                     ennemis.append(Ennemi(LARGEUR_ECRAN, difficulte, vague))
                     # On change un peu le temps d'apparition pour varier
-                    base_time = 30 if boss is None else 90
+                    if boss is None:
+                        base_time = 30
+                    else:
+                        base_time = 90
                     probabilite_apparition = random.randint(base_time, base_time + 60)
 
         if boss is None:
             if ennemis_tues >= OBJECTIF_BOSS and len(ennemis) == 0:
-                boss = Boss(LARGEUR_ECRAN, difficulte, vague)
+                boss = Boss(LARGEUR_ECRAN, joueur, difficulte, vague, poids_memoire=memoire_cerveau)
         else:
             boss.mettre_a_jour(LARGEUR_ECRAN, HAUTEUR_ECRAN)
                 
@@ -257,6 +281,13 @@ def lancer_partie():
                         if vague > 5:
                             vague = 1
                             niveau += 1
+                        
+                        #Evolution du boss
+                        # On récupère le cerveau du boss mort
+                        memoire_cerveau = boss.cerveau.poids
+                        # On le rend un peu plus rapide pour la prochaine fois
+                        # (On augmente l'importance de la perte de vie)
+                        memoire_cerveau[0] += 0.05 
                         
                         difficulte = calculer_difficulte()
                         
@@ -333,8 +364,8 @@ def lancer_partie():
         # Si c'est perdu : 
         if game_over:
             
-            # On attend un peu pour voir l'explosion
-            for _ in range(120):
+            # On attend un peu pour voir l'explosion (120 frames = 2 secondes)
+            for compteur in range(120):
                 for evenement in pygame.event.get():
                     if evenement.type == pygame.QUIT:
                         pygame.quit()

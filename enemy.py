@@ -8,8 +8,10 @@ class Ennemi:
         # On a besoin de la largeur pour pas qu'il spawn hors de l'écran
         # La difficulté et la vague changent sa vitesse et son image
         
-        # On choisis l'image selon la vague (y'a 4 (lié au vagues) types d'ennemis)
-        dossier_vague = min(niveau_vague, 4)
+        # On choisis l'image selon la vague (y'a 4 types d'ennemis max)
+        dossier_vague = niveau_vague
+        if dossier_vague > 4:
+            dossier_vague = 4
         chemin_image = os.path.join('asssets', 'Enemies', f'Vague{dossier_vague}', 'Normal Ship.png')
         image_brute = pygame.image.load(chemin_image)
         
@@ -34,7 +36,7 @@ class Ennemi:
         self.vie = 1 + int((difficulte - 1) * 0.5)
     
     def deplacer(self):
-        # Il tombe vers le bas
+        # Il descend vers le bas de la fenêtre
         self.y += self.vitesse
         
     def dessiner(self, ecran):
@@ -42,7 +44,7 @@ class Ennemi:
         ecran.blit(self.image, (self.x, self.y))
         
     def hors_ecran(self, hauteur_ecran):
-        # S'il est passé tout en bas,le joueur perd
+        # S'il est passé tout en bas, le joueur perd
         return self.y > hauteur_ecran
 
     def get_rect(self):

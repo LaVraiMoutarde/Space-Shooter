@@ -51,12 +51,20 @@ class Joueur:
             self.niveau_vaisseau += 1
             
             # + vitesse, + degats, + vitesse de tir
-            self.vitesse += 0.5
-            self.delai_entre_tirs = max(15, self.delai_entre_tirs - 3)
-            if self.niveau_vaisseau in [3, 5]:
-                self.degats += 0.3
+            self.vitesse += 0.3
             
-            # nouveau asset
+            # On accélère le tir mais pas trop
+            self.delai_entre_tirs = self.delai_entre_tirs - 3
+            if self.delai_entre_tirs < 15:
+                self.delai_entre_tirs = 15
+            
+            # Les niveaux 3 et 5 donnent plus de dégâts
+            if self.niveau_vaisseau == 3:
+                self.degats += 0.2
+            if self.niveau_vaisseau == 5:
+                self.degats += 0.2
+            
+            # nouveau asset chargé
             self.charger_image()
             return True
         return False
@@ -116,10 +124,22 @@ class Joueur:
     
     def limiter_position(self, largeur_ecran, hauteur_ecran):
         # Si on tape contre les murs, on se fait bloquer
-        if self.x < 0: self.x = 0
-        if self.x + self.largeur > largeur_ecran: self.x = largeur_ecran - self.largeur
-        if self.y < 0: self.y = 0
-        if self.y + self.hauteur > hauteur_ecran: self.y = hauteur_ecran - self.hauteur
+        
+        # Mur de gauche
+        if self.x < 0:
+            self.x = 0
+        
+        # Mur de droite
+        if self.x + self.largeur > largeur_ecran:
+            self.x = largeur_ecran - self.largeur
+        
+        # Plafond
+        if self.y < 0:
+            self.y = 0
+        
+        # Sol
+        if self.y + self.hauteur > hauteur_ecran:
+            self.y = hauteur_ecran - self.hauteur
         
     def get_rect(self):
         # Savoir où on est (pour les collisions)
